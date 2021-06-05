@@ -32,7 +32,7 @@ app.post("/signin", async (req, res) => {
     !cpassword
   ) {
     return res.status(422).send({
-      message: "All fields are Required",
+      error: "All fields are Required",
     });
   }
   try {
@@ -42,21 +42,25 @@ app.post("/signin", async (req, res) => {
     const emailExist = await User.findOne({ email });
     const phoneExist = await User.findOne({ phone });
 
-    if (emailExist) {
+    if (!email.match(emailRegex)) {
       return res.status(422).send({
-        message: "Email already Exists",
+        error: "Enter Valid Email",
       });
-    } else if (!phoneLength === 10) {
+    } else if (emailExist) {
       return res.status(422).send({
-        message: "Number should be 10",
+        error: "Email already Exists",
+      });
+    } else if (phoneLength !== 10) {
+      return res.status(422).send({
+        error: "Enter Valid Phone",
       });
     } else if (phoneExist) {
       return res.status(422).send({
-        message: "Phone already Exists",
+        error: "Phone already Exists",
       });
     } else if (password !== cpassword) {
       return res.status(422).send({
-        message: "Passwords not matched",
+        error: "Passwords not matched",
       });
     }
 
@@ -116,6 +120,13 @@ app.post("/login", async (req, res) => {
     console.log(`Error BL: ${error}`);
   }
   console.log("Hello I am Login Page");
+});
+
+// get all the data
+app.get("/allData", (req, res) => {
+  res.status(200).send({
+    data: "You get all the Data",
+  });
 });
 
 app.listen(port, () => {
