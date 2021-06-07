@@ -42,11 +42,12 @@ app.post("/signin", async (req, res) => {
     const emailExist = await User.findOne({ email });
     const phoneExist = await User.findOne({ phone });
 
-    if (!email.match(emailRegex)) {
-      return res.status(422).send({
-        error: "Enter Valid Email",
-      });
-    } else if (emailExist) {
+    // if (!email.match(emailRegex)) {
+    //   return res.status(422).send({
+    //     error: "Enter Valid Email",
+    //   });
+    // } else
+    if (emailExist) {
       return res.status(422).send({
         error: "Email already Exists",
       });
@@ -89,21 +90,21 @@ app.post("/login", async (req, res) => {
 
   if (!email || !password) {
     return res.status(422).send({
-      message: "Both fields are Required",
+      error: "Both fields are Required",
     });
   }
   try {
     const userExist = await User.findOne({ email });
     if (!userExist) {
       return res.status(422).send({
-        message: "Invalid Credentials",
+        error: "Invalid Credentials",
       });
     }
     const hashPassword = userExist.password;
     const ans = await bcrypt.compare(password, hashPassword);
     if (!ans) {
       return res.status(422).send({
-        message: "Invalid Credentials",
+        error: "Invalid Credentials",
       });
     } else {
       const token = await userExist.generateAuthToken();
@@ -119,7 +120,6 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.log(`Error BL: ${error}`);
   }
-  console.log("Hello I am Login Page");
 });
 
 // get all the data
